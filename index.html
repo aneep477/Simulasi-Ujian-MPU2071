@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulasi Ujian MPU2071</title>
+<title>Ujian MPU2071</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -46,11 +46,10 @@ Masuk
 <div class="mt-6 text-sm text-left">
 <b>AMARAN ANTI-CHEAT</b>
 <ul class="list-disc ml-4 mt-2">
-<li>Simulasi Ujian akan FULLSCREEN</li>
+<li>Ujian akan FULLSCREEN</li>
 <li>Tidak boleh minimize</li>
 <li>Tidak boleh tukar tab</li>
-<li>Jangan MENIRU tuhan nampak</li>
-<li>Jika langgar Jangan Ketegaq– ujian auto tamat</li>
+<li>Jika langgar – ujian auto tamat</li>
 </ul>
 </div>
 
@@ -62,7 +61,7 @@ Masuk
 
 <div class="p-4 bg-teal-900 flex justify-between">
 <div>
-<h3 class="text-xl font-bold">SIMULASI UJIAN MPU2071</h3>
+<h3 class="text-xl font-bold">UJIAN MPU2071</h3>
 <p id="info"></p>
 </div>
 <div>
@@ -102,10 +101,9 @@ HANTAR JAWAPAN
 
 <script>
 
-// ===== API APPS SCRIPT =====
 const API_URL = "https://script.google.com/macros/s/AKfycbyey4T67G1SjKuxlIlXnw7odSA_9scjeE_hlFtQl2mi1SUxzC-suEbqJMPFbnNyVU5f/exec";
 
-// ===== SOALAN (30) =====
+// ===== 30 SOALAN RASMI =====
 const allQuestions = [
 
 {q:"Dalam semakan tahunan, beberapa unit tidak mengemas kini perlembagaan walaupun berlaku perubahan dasar. Apakah strategi terbaik?",
@@ -126,24 +124,198 @@ B:"Membolehkan guru memilih aktiviti yang paling mudah dilaksanakan",
 C:"Menyelaraskan aktiviti dengan perkembangan holistik murid",
 D:"Menentukan aktiviti dijalankan pada waktu petang sahaja"}, ans:"C"},
 
-// ----- 27 soalan lain disertakan (diringkaskan dalam mesej ini demi ruang) -----
-// Kod sebenar: semua 30 soalan telah dimasukkan seperti mesej encik sebelum ini
+{q:"Sekolah ingin memperkukuh kepimpinan murid melalui kokurikulum. Pendekatan manakah yang paling berkesan?",
+opt:{A:"Menentukan semua jawatan disandang oleh guru",
+B:"Melibatkan murid dalam perancangan, pelaksanaan dan penilaian aktiviti",
+C:"Memberikan murid jawatan tetapi tanpa tanggungjawab sebenar",
+D:"Mengurangkan peranan murid bagi mengelakkan kesilapan"}, ans:"B"},
+
+{q:"Situasi manakah paling menggambarkan peranan guru penasihat dalam memantau perkembangan sahsiah murid secara berterusan?",
+opt:{A:"Memberi maklum balas konstruktif selepas setiap aktiviti dan menyemak pencapaian murid secara berterusan",
+B:"Merekod kehadiran sahaja tanpa menilai penglibatan murid",
+C:"Mengadakan aktiviti tanpa perancangan dan refleksi",
+D:"Menyerahkan penilaian aktiviti kepada murid sepenuhnya"}, ans:"A"},
+
+{q:"Jika carta organisasi kokurikulum menunjukkan pertindihan tugas antara penyelaras dan setiausaha, apakah tindakan paling wajar?",
+opt:{A:"Menyemak semula struktur organisasi bagi memperjelas bidang kuasa",
+B:"Menggabungkan kedua-dua jawatan tanpa menilai beban tugas",
+C:"Menambah lebih ramai guru dalam jawatankuasa",
+D:"Mengurangkan aktiviti tahunan bagi mengelakkan kekeliruan"}, ans:"A"},
+
+{q:"Sekolah bercadang meningkatkan penglibatan murid dalam badan beruniform. Berdasarkan matlamat kokurikulum, tindakan manakah yang paling sesuai dilaksanakan?",
+opt:{A:"Menyediakan aktiviti menarik yang membina disiplin dan kepimpinan",
+B:"Mewajibkan kehadiran tanpa memberi pilihan minat",
+C:"Mengurangkan bilangan aktiviti bagi menjimatkan masa",
+D:"Memberi kuasa penuh kepada guru untuk memilih ketua pasukan"}, ans:"A"},
+
+{q:"Sekiranya pelaksanaan kokurikulum menekankan pendekatan kolaboratif, situasi manakah yang paling menggambarkan pendekatan tersebut?",
+opt:{A:"Guru melaksanakan aktiviti sepenuhnya tanpa penglibatan murid",
+B:"Murid merancang aktiviti sendiri tanpa pengawasan guru",
+C:"Guru menetapkan tugasan individu tanpa kerja kumpulan",
+D:"Guru dan murid bersama-sama merancang serta menilai hasil aktiviti"}, ans:"D"},
+
+{q:"Berdasarkan Akta Pendidikan 1996, kokurikulum bertujuan membentuk sahsiah murid. Situasi manakah paling mencerminkan kehendak akta tersebut?",
+opt:{A:"Program diatur secara sistematik dan memberi peluang kepada murid membina kemahiran insaniah",
+B:"Aktiviti dirancang untuk memenuhi jadual tetapi tidak menilai perkembangan murid",
+C:"Murid diwajibkan hadir tetapi tidak terlibat aktif",
+D:"Aktiviti ringkas diadakan hanya untuk melengkapkan laporan tahunan"}, ans:"A"},
+
+{q:"Apakah faktor paling penting bagi memastikan carta organisasi kokurikulum berfungsi dengan efektif?",
+opt:{A:"Semua nama ditulis dalam bentuk huruf besar",
+B:"Carta mempunyai lebih daripada 10 jawatan utama",
+C:"Setiap jawatan mempunyai peranan yang jelas dan boleh diukur",
+D:"Guru yang berpengalaman sahaja diberikan jawatan"}, ans:"C"},
+
+{q:"Apabila murid kurang menunjukkan inisiatif semasa aktiviti, tindakan manakah paling sesuai untuk penambahbaikan?",
+opt:{A:"Mengurangkan peranan murid agar aktiviti lebih terurus",
+B:"Menggantikan semua murid yang pasif",
+C:"Menggalakkan murid memimpin sebahagian aktiviti sambil guru bertindak sebagai fasilitator",
+D:"Menjalankan aktiviti tanpa refleksi atau penilaian"}, ans:"C"},
+
+{q:"Jika objektif sebuah persatuan baharu tidak selari dengan dasar kokurikulum sekolah, apakah tindakan pengurusan paling sesuai?",
+opt:{A:"Meminta guru penasihat menyemak semula objektif agar menepati dasar dan peraturan",
+B:"Meluluskan pendaftaran untuk meningkatkan bilangan persatuan",
+C:"Mewajibkan ahli menandatangani borang kehadiran setiap minggu",
+D:"Menggantikan guru penasihat dengan yang lebih berpengalaman"}, ans:"A"},
+
+{q:"Sekolah ingin menubuhkan Kelab STEM. Apakah tindakan yang paling mencerminkan pengurusan berkualiti?",
+opt:{A:"Melantik guru penasihat dan terus memulakan aktiviti tanpa dokumen rasmi",
+B:"Mengharapkan murid menyediakan semua maklumat berkaitan unit tersebut",
+C:"Menyediakan kertas cadangan lengkap termasuk objektif, struktur organisasi dan justifikasi keperluan",
+D:"Menubuhkan kelab tanpa melalui kelulusan jawatankuasa kokurikulum"}, ans:"C"},
+
+{q:"Dalam usaha meningkatkan mutu aktiviti, pihak pengurusan mewajibkan setiap unit menjalankan post-mortem. Keberkesanan langkah ini paling bergantung kepada:",
+opt:{A:"Tempoh masa perbincangan tidak melebihi 10 minit",
+B:"Bilangan aktiviti berjaya dijalankan dalam setahun",
+C:"Jumlah kritikan yang diberikan kepada murid",
+D:"Kebolehan guru menganalisis data dan mencadangkan penambahbaikan"}, ans:"D"},
+
+{q:"Apakah implikasi paling tepat apabila Guru Penasihat menumpukan perancangan strategik manakala Jurulatih fokus pada latihan teknikal?",
+opt:{A:"Murid hanya belajar aspek teknikal sahaja",
+B:"Jurulatih boleh menentukan matlamat aktiviti tanpa bimbingan guru",
+C:"Guru Penasihat tidak perlu memantau murid langsung",
+D:"Aktiviti menjadi lebih holistik kerana perancangan strategik dan latihan teknikal saling melengkapi"}, ans:"D"},
+
+{q:"Antara situasi berikut, yang manakah menunjukkan kegagalan mematuhi SOP penubuhan unit kokurikulum berkaitan keselamatan?",
+opt:{A:"Mendapatkan kelulusan pentadbir sebelum program",
+B:"Menyediakan borang persetujuan ibu bapa sebelum aktiviti",
+C:"Mengadakan taklimat keselamatan kepada murid",
+D:"Merancang aktiviti tanpa menilai risiko lokasi dan kelengkapan"}, ans:"D"},
+
+{q:"Apabila nama jawatan dalam struktur organisasi unit tidak selaras dengan garis panduan badan induk, apakah keputusan paling tepat?",
+opt:{A:"Mengekalkan jawatan sedia ada untuk memudahkan kerja guru",
+B:"Menghapuskan jawatan murid bagi mengurangkan beban tugas",
+C:"Mengubah suai struktur organisasi agar selaras dengan garis panduan badan induk",
+D:"Menambah jawatan baharu tanpa rujukan badan induk"}, ans:"C"},
+
+{q:"Dalam aktiviti muzik yang melibatkan beberapa pihak dengan peranan berbeza, analisis manakah paling tepat?",
+opt:{A:"Guru Penasihat lebih dominan daripada Jurulatih",
+B:"Jurulatih tidak perlu mengikut arahan Guru",
+C:"Perbezaan ini membolehkan setiap pihak memberi sumbangan unik berdasarkan kepakaran masing-masing",
+D:"Guru hanya hadir tanpa mengambil peranan aktif"}, ans:"C"},
+
+{q:"Dalam semakan pematuhan, beberapa unit kokurikulum didapati tidak mematuhi peraturan dokumentasi. Apakah strategi terbaik bagi meningkatkan keseragaman?",
+opt:{A:"Menyerahkan semua rekod kepada ketua murid",
+B:"Mewujudkan sistem pengurusan digital berstandard dan melatih semua guru penasihat",
+C:"Menghapuskan keperluan rekod untuk aktiviti tertentu",
+D:"Mewajibkan rekod dibuat hanya pada akhir tahun"}, ans:"B"},
+
+{q:"Situasi manakah yang paling menunjukkan pematuhan kepada akta dan garis panduan KPM dalam proses pendaftaran unit kokurikulum?",
+opt:{A:"Menubuhkan persatuan berdasarkan hobi guru semata-mata",
+B:"Meluluskan unit baharu tanpa membuat semakan peraturan",
+C:"Meluluskan unit yang tidak mempunyai struktur organisasi demi kreativiti",
+D:"Mendaftarkan unit yang mempunyai tujuan akademik, sahsiah dan pembangunan murid yang diiktiraf KPM"}, ans:"D"},
+
+{q:"Sekolah ingin mengukuhkan kepimpinan murid melalui badan beruniform. Strategi manakah paling menepati prinsip pengurusan berkesan?",
+opt:{A:"Melantik ketua pasukan berdasarkan umur semata-mata",
+B:"Memberikan jawatan kepada murid tanpa latihan",
+C:"Menetapkan semua keputusan hanya dibuat guru penasihat",
+D:"Memberi ruang kepada murid merancang aktiviti bawah pengawasan guru penasihat"}, ans:"D"},
+
+{q:"Sekolah menghadapi ketidakseimbangan penyertaan murid antara kelab akademik dan bukan akademik. Apakah langkah paling berkesan?",
+opt:{A:"Mengehadkan jumlah ahli dalam kelab yang popular",
+B:"Menambah bilangan aktiviti kelab akademik sahaja",
+C:"Melaksanakan analisis minat murid bagi menyusun semula penempatan ahli",
+D:"Menggalakkan murid memilih kelab secara rawak bagi tujuan variasi"}, ans:"C"},
+
+{q:"Pembahagian tugas antara Guru Penasihat, Jurulatih dan guru logistik dalam program perkhemahan akan memberi kesan berikut:",
+opt:{A:"Menyukarkan murid untuk memahami peranan setiap pihak",
+B:"Mengelakkan pertindihan tanggungjawab dan meningkatkan keberkesanan pelaksanaan",
+C:"Mengurangkan penglibatan murid dalam aktiviti",
+D:"Membebankan Guru sepenuhnya"}, ans:"B"},
+
+{q:"Jika aktiviti kelab tidak mencapai objektif pembelajaran, apakah tindakan profesional guru penasihat?",
+opt:{A:"Mengulangi aktiviti yang sama untuk menjimatkan masa",
+B:"Menilai semula keperluan murid dan merancang aktiviti berasaskan hasil pembelajaran yang jelas",
+C:"Menyerahkan murid sepenuhnya merancang tanpa bimbingan",
+D:"Menghapuskan objektif kelab agar lebih mudah dicapai"}, ans:"B"},
+
+{q:"Apakah strategi terbaik bagi memastikan kesamarataan gender dalam aktiviti sukan sekolah?",
+opt:{A:"Merancang aktiviti dan peraturan yang memberi peluang sama rata kepada semua murid tanpa mengira jantina",
+B:"Mengasingkan aktiviti berdasarkan jantina tanpa pertimbangan matlamat",
+C:"Memberi keutamaan kepada murid lelaki kerana lebih fizikal",
+D:"Mengurangkan penyertaan murid perempuan supaya aktiviti lebih cepat"}, ans:"A"},
+
+{q:"Jika murid perempuan kurang aktif disebabkan stereotaip budaya, apakah pendekatan paling berkesan untuk mengekalkan kesamarataan gender?",
+opt:{A:"Menyediakan latihan tambahan hanya untuk murid perempuan",
+B:"Menggalakkan penglibatan semua murid dengan mengubah peraturan dan memberi bimbingan saksama",
+C:"Membenarkan murid lelaki mendominasi pasukan",
+D:"Mengurangkan cabaran sukan bagi murid perempuan sahaja"}, ans:"B"},
+
+{q:"Selepas kelab baharu ditubuhkan, tindakan manakah paling selaras dengan SOP penyelarasan organisasi?",
+opt:{A:"Melantik jawatankuasa kelab yang tidak melapor kepada mana-mana penyelaras",
+B:"Memberi kebebasan penuh kepada guru penasihat tanpa struktur organisasi",
+C:"Menetapkan hubungan pelaporan yang jelas antara guru penasihat dan penyelaras unit berkaitan",
+D:"Menggantikan semua jawatan murid setiap bulan"}, ans:"C"},
+
+{q:"Sebelum melaksanakan aktiviti baharu seperti projek komuniti, apakah tindakan paling profesional yang perlu diambil oleh guru?",
+opt:{A:"Menyemak SPI berkaitan, menyediakan kertas cadangan lengkap dan mendapatkan kelulusan pentadbir",
+B:"Memulakan aktiviti tanpa dokumen kelulusan kerana risiko dianggap rendah",
+C:"Meluluskan aktiviti serta-merta untuk menggalakkan penglibatan murid",
+D:"Mengurangkan bilangan murid untuk mengelakkan masalah"}, ans:"A"},
+
+{q:"Dalam proses penilaian kelayakan guru penasihat, jika guru belum mempunyai latihan wajib, apakah langkah terbaik?",
+opt:{A:"Melantik guru tersebut juga kerana kekurangan guru",
+B:"Menangguhkan penubuhan sehingga syarat kelayakan guru penasihat dipenuhi",
+C:"Menyerahkan tugasan kepada murid",
+D:"Mewajibkan murid menyediakan modul latihan sendiri"}, ans:"B"},
+
+{q:"Bagi memastikan matlamat kokurikulum tercapai melalui penerapan nilai murni, kejayaan pendekatan ini paling bergantung kepada:",
+opt:{A:"Bilangan aktiviti yang dijalankan dalam setahun",
+B:"Keupayaan guru memastikan aktiviti disampaikan secara bermakna",
+C:"Tahap populariti aktiviti kokurikulum",
+D:"Penyertaan ibu bapa dalam setiap aktiviti"}, ans:"B"}
 
 ];
 
 
-// ===== LOGIK SHUFFLE =====
-let questions = [...allQuestions].sort(()=>Math.random()-0.5);
+// ===== KAEDAH TERBAIK SHUFFLE BERBEZA PER PELAJAR =====
+function deterministicShuffle(array, seed) {
+  let m = array.length, t, i;
+  while (m) {
+    i = Math.floor(random(seed) * m--);
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+    ++seed;
+  }
+  return array;
+}
 
-// ===== PEMBOLEHUBAH =====
+function random(seed) {
+  var x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
+
+// ===== LOGIK UTAMA =====
+let questions = [];
 let index = 0;
 let answers = {};
 let timerInterval;
 let isQuizActive = false;
 let kp_global = "";
 
-
-// ===== LOGIN =====
 function login(){
 
 let kp = document.getElementById("kp").value.trim();
@@ -177,6 +349,9 @@ fetch(API_URL,{
 
     kp_global = kp;
 
+    let seed = parseInt(kp.replace(/-/g,"").slice(-4));
+    questions = deterministicShuffle([...allQuestions], seed);
+
     document.getElementById("info").innerText =
       res.nama + " | " + res.kelas;
 
@@ -190,7 +365,7 @@ fetch(API_URL,{
 }
 
 
-// ===== RENDER SOALAN =====
+// ===== FUNGSI RENDER =====
 function render(){
 
 let q = questions[index];
@@ -220,8 +395,6 @@ document.getElementById("options").innerHTML = html;
 renderNav();
 }
 
-
-// ===== NAVIGASI =====
 function renderNav(){
 
 let nav="";
@@ -237,7 +410,6 @@ nav += `<button class="${cls}" onclick="goto(${i})">${i+1}</button>`;
 
 document.getElementById("nav").innerHTML = nav;
 }
-
 
 function next(){ if(index<questions.length-1){index++; render();}}
 function prev(){ if(index>0){index--; render();}}
