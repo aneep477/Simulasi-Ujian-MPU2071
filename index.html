@@ -9,264 +9,206 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-
-/* Animated Gradient Background */
 body {
   background: linear-gradient(-45deg, #0f172a, #1e3a8a, #064e3b, #022c22);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
+  user-select: none;
+  -webkit-user-select: none;
 }
-
 @keyframes gradientBG {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
-
-/* Glassmorphism */
 .glass {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,0.08);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
-
-/* Liquid Glass Card */
-.liquid {
-  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-}
-
-/* Hover Micro Interaction */
 .option:hover {
   transform: scale(1.01);
   transition: 0.2s ease;
 }
-
-/* Scroll Animation */
-.fade-in {
-  animation: fade 0.5s ease;
-}
-
-@keyframes fade {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 .nav-number.active {
-  background: #3b82f6;
-  color: white;
+  background:#3b82f6;
+  color:white;
 }
-
 </style>
-
 </head>
 
 <body class="min-h-screen text-white">
 
-<!-- HEADER -->
 <div class="glass sticky top-0 z-50 p-4 flex justify-between items-center">
+  <div>
+    <p class="text-sm opacity-70">Calon</p>
+    <p id="nama" class="font-bold text-xl"></p>
+  </div>
 
-<div>
-<p class="text-sm opacity-70">Calon</p>
-<p id="nama" class="font-bold text-xl tracking-wide"></p>
+  <div class="text-center">
+    <p class="text-sm opacity-70">Baki Masa</p>
+    <p id="timer" class="text-cyan-300 font-bold text-2xl">20:00</p>
+  </div>
+
+  <button onclick="submitQuiz()" class="bg-emerald-500 px-6 py-2 rounded-xl">
+    Hantar
+  </button>
 </div>
 
-<div class="text-center">
-<p class="text-sm opacity-70">Baki Masa</p>
-<p id="timer" class="text-cyan-300 font-bold text-2xl">20:00</p>
-</div>
-
-<button onclick="submitQuiz()"
-class="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-xl shadow-lg transition">
-Hantar
-</button>
-
-</div>
-
-<!-- QUIZ CARD -->
 <div class="max-w-4xl mx-auto mt-8 p-4">
-
-<div class="liquid p-6 fade-in">
+<div class="glass p-6 rounded-xl">
 
 <div class="mb-4 text-sm text-cyan-300 font-semibold">
 Soalan <span id="currentNo">1</span> / <span id="totalNo"></span>
 </div>
 
-<div id="questionText" class="text-lg font-medium mb-6 leading-relaxed"></div>
-
+<div id="questionText" class="text-lg font-medium mb-6"></div>
 <div id="options" class="space-y-3"></div>
 
 <div class="flex justify-between mt-8">
-<button onclick="prev()"
-class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition">
-Sebelum
-</button>
-
-<button onclick="next()"
-class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition">
-Seterusnya
-</button>
+<button onclick="prev()" class="bg-white/10 px-4 py-2 rounded-xl">Sebelum</button>
+<button onclick="next()" class="bg-blue-600 px-4 py-2 rounded-xl">Seterusnya</button>
 </div>
 
 </div>
-
 </div>
 
-<!-- NAVIGATION -->
 <div class="max-w-4xl mx-auto mt-4 p-4 glass rounded-xl">
-
 <div id="nav" class="flex flex-wrap gap-2 justify-center"></div>
-
 </div>
 
 <script>
 
-// ===== DATA PELAJAR (DEMO) =====
-const student = {
-nama:"NOR AMIRA AFIZA BINTI AHMAD"
-};
-
-document.getElementById("nama").innerText = student.nama;
-
-// ===== BANK SOALAN (contoh) =====
-const questions = [
-{
-q:"Kepentingan memahami konsep kokurikulum ialah?",
-opt:{
-A:"Mudah urus jadual",
-B:"Aktiviti santai",
-C:"Selari perkembangan holistik murid",
-D:"Jimat masa"
-},
-ans:"C"
-},
-{
-q:"Tindakan paling sesuai meningkatkan penyertaan badan beruniform?",
-opt:{
-A:"Aktiviti menarik membina kepimpinan",
-B:"Wajib hadir",
-C:"Kurangkan aktiviti",
-D:"Hujung minggu sahaja"
-},
-ans:"A"
-},
-{
-q:"Pendekatan kolaboratif bermaksud?",
-opt:{
-A:"Guru rancang semua",
-B:"Murid rancang sendiri",
-C:"Guru dan murid rancang bersama",
-D:"Aktiviti individu"
-},
-ans:"C"
-}
-];
+// ====== SETUP ASAS ======
+document.getElementById("nama").innerText = "PESERTA UJIAN";
 
 let index = 0;
 let answers = {};
+let isQuizActive = false;
+let timerInterval;
+
+// ===== 30 SOALAN (dipendekkan untuk contoh – guna set penuh sebenar) =====
+const questions = [
+{q:"Kepentingan memahami konsep kokurikulum ialah:", opt:{A:"Jadual tetap",B:"Aktiviti mudah",C:"Selari perkembangan holistik murid",D:"Waktu petang sahaja"}, ans:"C"},
+{q:"Tindakan terbaik meningkatkan penyertaan badan beruniform:", opt:{A:"Aktiviti menarik membina disiplin dan kepimpinan",B:"Wajib hadir",C:"Kurangkan aktiviti",D:"Guru pilih ketua"}, ans:"A"},
+{q:"Pendekatan kolaboratif ditunjukkan melalui:", opt:{A:"Guru buat semua",B:"Murid rancang sendiri",C:"Guru dan murid rancang bersama",D:"Tugasan individu"}, ans:"C"}
+];
 
 document.getElementById("totalNo").innerText = questions.length;
 
 // ===== RENDER =====
 function render(){
-
 let q = questions[index];
-
 document.getElementById("currentNo").innerText = index+1;
-
 document.getElementById("questionText").innerText = q.q;
 
 let html="";
-
-for(let key in q.opt){
-
-let checked = answers[index] === key ? "checked" : "";
-
+for(let k in q.opt){
+let checked = answers[index]===k?"checked":"";
 html += `
-<label class="option block p-4 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 cursor-pointer transition">
-<input type="radio" name="opt" value="${key}" ${checked}
-onclick="answers[${index}]='${key}'">
-<span class="ml-2">${key}. ${q.opt[key]}</span>
-</label>
-`;
+<label class="option block p-4 rounded-xl border border-white/20 bg-white/10 cursor-pointer">
+<input type="radio" name="opt" value="${k}" ${checked}
+onclick="answers[${index}]='${k}'"> ${k}. ${q.opt[k]}
+</label>`;
 }
-
 document.getElementById("options").innerHTML = html;
 
 renderNav();
-
 }
 
-// ===== NAVIGATION NUMBER =====
 function renderNav(){
-
 let nav="";
-
 for(let i=0;i<questions.length;i++){
-
-let active = i===index ? "active" : "";
-
-let color = answers[i] ? "bg-emerald-500/70" : "bg-white/10";
-
-nav += `
-<button onclick="goto(${i})"
-class="nav-number ${active} ${color} px-3 py-1 rounded-lg hover:bg-blue-600 transition">
-${i+1}
-</button>
-`;
+let active=i===index?"active":"";
+let color=answers[i]?"bg-emerald-500/70":"bg-white/10";
+nav += `<button onclick="goto(${i})" class="nav-number ${active} ${color} px-3 py-1 rounded-lg">${i+1}</button>`;
 }
-
 document.getElementById("nav").innerHTML = nav;
-
 }
 
-function next(){
-if(index < questions.length-1){
-index++;
-render();
-}
-}
-
-function prev(){
-if(index > 0){
-index--;
-render();
-}
-}
-
-function goto(i){
-index = i;
-render();
-}
+function next(){ if(index<questions.length-1){index++; render();}}
+function prev(){ if(index>0){index--; render();}}
+function goto(i){ index=i; render(); }
 
 // ===== TIMER =====
-let time = 20*60;
+function startTimer(min){
+let time = min*60;
 
-setInterval(()=>{
-
-let m = Math.floor(time/60);
-let s = time%60;
-
-document.getElementById("timer").innerText =
-m+":"+(s<10?"0"+s:s);
+timerInterval = setInterval(()=>{
+let m=Math.floor(time/60), s=time%60;
+document.getElementById("timer").innerText = m+":"+(s<10?"0"+s:s);
 
 if(time<=0){
-submitQuiz();
+forceSubmit("Masa Tamat");
+}
+time--;
+},1000);
 }
 
-time--;
+// =====================================================
+// --------- 5. ANTI-CHEAT (KILL SWITCH) --------------
+// =====================================================
 
-},1000);
+function enterFullscreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(() => {});
+    }
+}
 
-// ===== SUBMIT =====
+function activateKillSwitch() {
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && isQuizActive) {
+            isQuizActive = false;
+            forceSubmit("Pelanggaran: Menukar Tab / Minimize");
+        }
+    });
+
+    window.addEventListener("blur", () => {
+        if (isQuizActive) {
+            isQuizActive = false;
+            forceSubmit("Pelanggaran: Fokus Hilang (Blur)");
+        }
+    });
+
+}
+
+// ===== FORCE SUBMIT =====
+function forceSubmit(reason){
+
+clearInterval(timerInterval);
+
+Swal.fire({
+title:"UJIAN DITAMATKAN",
+text: reason,
+icon:"error",
+confirmButtonText:"Tutup",
+background:"#0f172a",
+color:"#fff"
+}).then(()=>{
+
+let score=0;
+questions.forEach((q,i)=>{
+if(answers[i]===q.ans) score++;
+});
+
+console.log("Markah disimpan:", score);
+
+location.reload();
+
+});
+}
+
+// ===== SUBMIT NORMAL =====
 function submitQuiz(){
 
-let score = 0;
+isQuizActive = false;
+clearInterval(timerInterval);
 
+let score=0;
 questions.forEach((q,i)=>{
-if(answers[i] === q.ans) score++;
+if(answers[i]===q.ans) score++;
 });
 
 Swal.fire({
@@ -279,9 +221,23 @@ color:"#fff"
 
 }
 
+// ===== START QUIZ =====
+function startQuiz(){
+
+enterFullscreen();
+startTimer(20);
+
+setTimeout(()=>{
+isQuizActive = true;
+activateKillSwitch();
+},2000);
+
 render();
+}
+
+// AUTO START
+startQuiz();
 
 </script>
-
 </body>
 </html>
