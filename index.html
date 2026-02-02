@@ -1,196 +1,138 @@
-<!DOCTYPE html>
-<html lang="ms">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ujian MPU2071</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<style>
-body {
-  background: linear-gradient(135deg, #004d40, #002b2b);
-  min-height: 100vh;
-  color:white;
-}
-
-.glass {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-}
-
-.nav-btn {
-  width:40px;
-  height:40px;
-  border-radius:10px;
-  background:#0d5c5c;
-}
-
-.answered {
-  background:#00bfa5 !important;
-}
-
-.active {
-  border:2px solid white;
-}
-</style>
-
-</head>
-
-<body>
-
-<!-- LOGIN PAGE -->
-<div id="loginPage" class="flex items-center justify-center min-h-screen">
-
-<div class="glass p-8 w-full max-w-md">
-
-<h2 class="text-2xl font-bold mb-4">LOGIN UJIAN MPU2071</h2>
-
-<input id="kp" placeholder="No Kad Pengenalan"
-class="w-full p-3 mb-4 text-black rounded">
-
-<button onclick="login()" 
-class="w-full bg-teal-600 p-3 rounded">
-Masuk
-</button>
-
-<p class="mt-4 text-sm">
-Hanya 15 pelajar berdaftar dibenarkan akses
-</p>
-
-</div>
-</div>
-
-<!-- QUIZ PAGE -->
-<div id="quizPage" class="hidden">
-
-<div class="p-4 bg-teal-900 flex justify-between">
-
-<div>
-<h3 class="text-xl font-bold">UJIAN MPU2071</h3>
-<p id="info"></p>
-</div>
-
-<div>
-<p>Masa Tinggal</p>
-<p id="timer" class="text-xl font-bold">20:00</p>
-</div>
-
-</div>
-
-<div class="flex p-4 gap-4">
-
-<!-- NAVIGATION -->
-<div class="glass p-4 w-1/4">
-
-<h4 class="mb-2">Navigasi Soalan</h4>
-
-<div id="nav" class="grid grid-cols-5 gap-2"></div>
-
-</div>
-
-<!-- QUESTION AREA -->
-<div class="glass p-6 flex-1">
-
-<p id="no"></p>
-<h3 id="question" class="mb-4"></h3>
-
-<div id="options"></div>
-
-<div class="mt-6 flex justify-between">
-<button onclick="prev()" class="p-2 bg-teal-700 rounded">
-Sebelum
-</button>
-
-<button onclick="next()" class="p-2 bg-teal-700 rounded">
-Seterusnya
-</button>
-</div>
-
-</div>
-</div>
-
-<div class="text-center mt-4">
-<button onclick="submitQuiz()" 
-class="bg-green-600 p-3 rounded">
-HANTAR JAWAPAN
-</button>
-</div>
-
-</div>
-
 <script>
-
-// ===== ADMIN ACCOUNT =====
-const admin = {
-kp:"admin123"
-};
 
 // ===== WHITELIST 15 PELAJAR =====
 const students = [
-{nama:"ABDURAHIM FAIZ BIN MAKHTARUDIN", kp:"010114-03-0523", kelas:"BNK1"},
-{nama:"AHMAD HILMI BIN KAMARULARIPIN", kp:"990918-10-5427", kelas:"BNK1"},
-{nama:"HUMAIRAH BINTI ABDUL RAHMAN", kp:"950913-14-7410", kelas:"BNK1"},
-{nama:"MOHAMAD ZULAMIDI BIN MOHAMED RASID", kp:"981016-06-5935", kelas:"BNK1"},
-{nama:"MUHAMMAD AMIRUL SYAMSURI BIN ZAHID", kp:"010915-07-0269", kelas:"BNK1"},
-{nama:"MUHAMMAD KHAIRUL AMIN BIN ALIAS", kp:"971004-38-5027", kelas:"BNK1"},
-{nama:"MUHAMMAD LUTFI AMIR BIN ABU BAKAR", kp:"990502-02-5597", kelas:"BNK1"},
-{nama:"MUHAMMAD LUTFI BIN AB.LATIF", kp:"010409-02-0015", kelas:"BNK1"},
-{nama:"MUHAMMAD NA'IM BIN AB RAZAK", kp:"941025-08-5421", kelas:"BNK1"},
-{nama:"NUR FARHANAH BINTI MOHAMAD", kp:"000207-11-0080", kelas:"BNK1"},
-{nama:"NUR FATIHAH BINTI ADAM", kp:"001226-08-0678", kelas:"BNK1"},
-{nama:"NURUL HASANAH BINTI CHE MAD SAH", kp:"000223-06-0116", kelas:"BNK1"},
-{nama:"RIZALMAN BIN ROZI", kp:"990708-03-5459", kelas:"BNK1"},
-{nama:"SHAFIKAH ZAKIAH BINTI MUHAMAD", kp:"970706-01-6176", kelas:"BNK1"},
-{nama:"SITI KHALIMAHTUS SAADIAH BINTI MOHD TAYIB", kp:"970706-38-5094", kelas:"BNK1"}
+"010114-03-0523",
+"990918-10-5427",
+"950913-14-7410",
+"981016-06-5935",
+"010915-07-0269",
+"971004-38-5027",
+"990502-02-5597",
+"010409-02-0015",
+"941025-08-5421",
+"000207-11-0080",
+"001226-08-0678",
+"000223-06-0116",
+"990708-03-5459",
+"970706-01-6176",
+"970706-38-5094"
 ];
 
-// ===== 30 SOALAN (RANGKA) =====
-const questions = [
-{q:"Soalan 1: .... ?", opt:{A:"",B:"",C:"",D:""}, ans:"A"},
-{q:"Soalan 2: .... ?", opt:{A:"",B:"",C:"",D:""}, ans:"B"},
-{q:"Soalan 3: .... ?", opt:{A:"",B:"",C:"",D:""}, ans:"C"},
+// ===== SEMUA 30 SOALAN =====
+const allQuestions = [
+{q:"Kepentingan memahami konsep kokurikulum ialah:", opt:{A:"Jadual tetap",B:"Aktiviti mudah",C:"Selari perkembangan holistik murid",D:"Waktu petang sahaja"}, ans:"C"},
 
-// ....
-// Encik boleh isi semua 30 soalan sebenar di sini
+{q:"Tindakan terbaik meningkatkan penyertaan badan beruniform:", opt:{A:"Aktiviti menarik membina disiplin",B:"Wajib hadir",C:"Kurangkan aktiviti",D:"Guru pilih ketua"}, ans:"A"},
 
+{q:"Pendekatan kolaboratif ditunjukkan melalui:", opt:{A:"Guru buat semua",B:"Murid rancang sendiri",C:"Guru dan murid rancang bersama",D:"Tugasan individu"}, ans:"C"},
+
+{q:"Keberkesanan integrasi nilai murni bergantung kepada:", opt:{A:"Bilangan aktiviti",B:"Penyampaian bermakna",C:"Populariti aktiviti",D:"Penglibatan ibu bapa"}, ans:"B"},
+
+{q:"Langkah terbaik mengatasi ketidakseimbangan penyertaan kelab:", opt:{A:"Tambah kelab popular",B:"Kurangkan kelab",C:"Analisis minat murid",D:"Pilih secara rawak"}, ans:"C"},
+
+{q:"Post-mortem berkesan jika:", opt:{A:"Mesyuarat ringkas",B:"Banyak aktiviti",C:"Banyak kritikan",D:"Analisis data"}, ans:"D"},
+
+{q:"Cara terbaik membina kepimpinan murid:", opt:{A:"Guru pegang jawatan",B:"Libat murid sepenuhnya",C:"Jawatan tanpa kuasa",D:"Kurangkan peranan murid"}, ans:"B"},
+
+{q:"Carta organisasi berkesan jika:", opt:{A:"Banyak jawatan",B:"Peranan jelas",C:"Nama besar",D:"Guru senior sahaja"}, ans:"B"},
+
+{q:"Strategi pengukuhan badan beruniform:", opt:{A:"Lantik ikut umur",B:"Tanpa latihan",C:"Keputusan guru",D:"Ruang merancang murid"}, ans:"D"},
+
+{q:"Mengikut Akta Pendidikan 1996:", opt:{A:"Aktiviti sistematik",B:"Hadir tanpa aktif",C:"Sekadar laporan",D:"Jadual sahaja"}, ans:"A"},
+
+{q:"Strategi dokumentasi terbaik:", opt:{A:"Sistem digital",B:"Ketua murid simpan",C:"Tiada rekod",D:"Akhir tahun"}, ans:"A"},
+
+{q:"Pematuhan SPI bermaksud:", opt:{A:"Semak dokumen",B:"Terus buat aktiviti",C:"Tiada kelulusan",D:"Kurang murid"}, ans:"A"},
+
+{q:"Kegagalan SOP:", opt:{A:"Kelulusan pentadbir",B:"Surat ibu bapa",C:"Taklimat keselamatan",D:"Tiada penilaian risiko"}, ans:"D"},
+
+{q:"Penyelarasan kelab:", opt:{A:"Tiada laporan",B:"Kebebasan penuh",C:"Hubungan pelaporan jelas",D:"Tukar AJK kerap"}, ans:"C"},
+
+{q:"Objektif tidak selari:", opt:{A:"Semak semula objektif",B:"Luluskan sahaja",C:"Wajib hadir",D:"Tukar guru"}, ans:"A"},
+
+{q:"Keselarasan unit:", opt:{A:"Ikut hobi guru",B:"Lulus tanpa semak",C:"Tiada struktur",D:"Selari KPM"}, ans:"D"},
+
+{q:"Nama jawatan tidak selari:", opt:{A:"Kekalkan sahaja",B:"Hapus jawatan",C:"Ubah ikut garis panduan",D:"Tambah jawatan"}, ans:"C"},
+
+{q:"Guru tiada latihan:", opt:{A:"Lantik juga",B:"Tangguh penubuhan",C:"Serah murid",D:"Modul sendiri"}, ans:"B"},
+
+{q:"Pertindihan kuasa:", opt:{A:"Semak peraturan",B:"Guru buat semua",C:"Tukar AJK",D:"Kurang aktiviti"}, ans:"A"},
+
+{q:"Pemantauan tahunan:", opt:{A:"Biarkan lama",B:"Lulus semua",C:"Serah murid",D:"Semakan berkala"}, ans:"D"},
+
+{q:"Aktiviti tidak capai objektif:", opt:{A:"Ulang aktiviti",B:"Nilai semula",C:"Serah murid",D:"Hapus objektif"}, ans:"B"},
+
+{q:"Murid pasif:", opt:{A:"Kurang peranan",B:"Ganti murid",C:"Galak memimpin",D:"Tiada refleksi"}, ans:"C"},
+
+{q:"Peranan guru penasihat:", opt:{A:"Maklum balas",B:"Rekod sahaja",C:"Tanpa refleksi",D:"Serah murid"}, ans:"A"},
+
+{q:"Implikasi pemisahan peranan:", opt:{A:"Teknikal sahaja",B:"Tanpa guru",C:"Tiada pemantauan",D:"Holistik"}, ans:"D"},
+
+{q:"Agihan tugas program:", opt:{A:"Keliru peranan",B:"Elak pertindihan",C:"Kurang murid",D:"Beban guru"}, ans:"B"},
+
+{q:"Perbezaan peranan:", opt:{A:"Guru dominan",B:"Jurulatih bebas",C:"Sumbangan unik",D:"Guru pasif"}, ans:"C"},
+
+{q:"Kesaksamaan gender:", opt:{A:"Peluang sama",B:"Asing ikut jantina",C:"Utama lelaki",D:"Kurang perempuan"}, ans:"A"},
+
+{q:"Stereotaip budaya:", opt:{A:"Latihan khas",B:"Libat semua",C:"Dominasi lelaki",D:"Kurang cabaran"}, ans:"B"},
+
+{q:"Objektif kokurikulum:", opt:{A:"Disiplin",B:"Akademik sahaja",C:"Bakat sahaja",D:"Rekod"}, ans:"A"},
+
+{q:"Prinsip pengurusan:", opt:{A:"Perancangan",B:"Populariti",C:"Kos rendah",D:"Jumlah aktiviti"}, ans:"A"}
 ];
 
-let index=0;
-let answers={};
-let time=1200;
-let isQuizActive=false;
-
-function login(){
-
-let kp=document.getElementById("kp").value;
-
-if(kp===admin.kp){
-Swal.fire("Admin Login","Mod Admin","info");
-return;
+// ===== FUNGSI SHUFFLE =====
+function shuffle(array) {
+for (let i = array.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]];
+}
+return array;
 }
 
-let s=students.find(x=>x.kp===kp);
+// ===== TENTUKAN SET BERDASARKAN IC =====
+function assignSet(kp){
 
-if(!s){
+let index = students.indexOf(kp);
+
+if(index <= 4) return "A";
+if(index <= 9) return "B";
+return "C";
+}
+
+let questions = [];
+let answers = {};
+let index = 0;
+let isQuizActive = false;
+let time = 1200;
+
+// ===== LOGIN =====
+function login(){
+
+let kp = document.getElementById("kp").value;
+
+if(!students.includes(kp)){
 Swal.fire("Akses Ditolak","Anda tidak berdaftar","error");
 return;
 }
 
-localStorage.setItem("user",JSON.stringify(s));
+let set = assignSet(kp);
+
+let temp = [...allQuestions];
+
+if(set==="A") questions = shuffle(temp);
+if(set==="B") questions = shuffle(temp).reverse();
+if(set==="C") questions = shuffle(temp).slice(0,30);
 
 document.getElementById("loginPage").classList.add("hidden");
 document.getElementById("quizPage").classList.remove("hidden");
-
-document.getElementById("info").innerText =
-s.nama + " | " + s.kelas;
 
 start();
 
 }
 
+// ===== START =====
 function start(){
 
 enterFullscreen();
@@ -201,9 +143,9 @@ render();
 setInterval(timer,1000);
 
 isQuizActive=true;
-
 }
 
+// ===== RENDER =====
 function render(){
 
 document.getElementById("no").innerText =
@@ -255,39 +197,17 @@ document.getElementById("nav").innerHTML=html;
 
 }
 
-function next(){
-if(index<questions.length-1){
-index++;
-render();
-}
-}
-
-function prev(){
-if(index>0){
-index--;
-render();
-}
-}
-
-function goto(i){
-index=i;
-render();
-}
+function next(){ if(index<questions.length-1){ index++; render(); } }
+function prev(){ if(index>0){ index--; render(); } }
+function goto(i){ index=i; render(); }
 
 function timer(){
-
 time--;
-
 let m=Math.floor(time/60);
 let s=time%60;
+document.getElementById("timer").innerText=m+":"+(s<10?"0"+s:s);
 
-document.getElementById("timer").innerText=
-m+":"+(s<10?"0"+s:s);
-
-if(time<=0){
-forceSubmit("Masa Tamat");
-}
-
+if(time<=0) forceSubmit("Masa Tamat");
 }
 
 function submitQuiz(){
@@ -309,12 +229,9 @@ Swal.fire(
 }
 
 function forceSubmit(reason){
-
 isQuizActive=false;
-
 Swal.fire("Ujian Tamat",reason,"error")
 .then(()=>submitQuiz());
-
 }
 
 function enterFullscreen(){
@@ -336,6 +253,3 @@ forceSubmit("Keluar Skrin");
 }
 
 </script>
-
-</body>
-</html>
