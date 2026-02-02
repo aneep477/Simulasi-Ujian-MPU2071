@@ -3,291 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pengurusan Kokurikulum MPU2071</title>
+<title>Ujian MPU2071</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 body {
-  background: linear-gradient(-45deg, #0f172a, #1e3a8a, #064e3b, #022c22);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  user-select: none;
-  -webkit-user-select: none;
-}
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  background: linear-gradient(135deg, #004d40, #002b2b);
+  min-height: 100vh;
+  color:white;
 }
 
 .glass {
   background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
 }
 
-.option {
-  transition: all 0.3s ease;
-}
-
-.option:hover {
-  transform: scale(1.02);
-}
-
-.selected {
-  background: rgba(16,185,129,0.2) !important;
-  border: 2px solid #10b981 !important;
-}
-
-.nav-number.active {
-  background:#3b82f6;
-  color:white;
+.nav-btn {
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  background:#0d5c5c;
 }
 
 .answered {
-  background:#10b981 !important;
-  color:white !important;
+  background:#00bfa5 !important;
 }
 
-.progress-bar {
-  height: 6px;
-  background: linear-gradient(to right, #3b82f6, #10b981);
-  transition: width 0.4s ease;
+.active {
+  border:2px solid white;
 }
 </style>
+
 </head>
 
-<body class="min-h-screen text-white">
+<body>
 
-<!-- HEADER -->
-<div class="glass sticky top-0 z-50 p-4">
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="flex items-center justify-center min-h-screen">
 
-  <div class="flex justify-between items-center mb-3">
-    <div>
-      <p class="text-xs opacity-70">Calon</p>
-      <p id="nama" class="font-bold text-lg md:text-xl">PESERTA UJIAN</p>
-    </div>
+<div class="glass p-8 w-full max-w-md">
 
-    <div class="text-right">
-      <p class="text-xs opacity-70">Baki Masa</p>
-      <p id="timer" class="text-cyan-300 font-bold text-xl md:text-2xl">20:00</p>
-    </div>
-  </div>
+<h2 class="text-2xl font-bold mb-4">LOGIN UJIAN MPU2071</h2>
 
-  <div class="w-full bg-white/10 rounded-full">
-    <div id="progress" class="progress-bar rounded-full" style="width:0%"></div>
-  </div>
+<input id="kp" placeholder="No Kad Pengenalan"
+class="w-full p-3 mb-4 text-black rounded">
+
+<button onclick="login()" 
+class="w-full bg-teal-600 p-3 rounded">
+Masuk
+</button>
+
+<p class="mt-4 text-sm">
+Hanya 15 pelajar berdaftar dibenarkan akses
+</p>
+
+</div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div id="quizPage" class="hidden">
+
+<div class="p-4 bg-teal-900 flex justify-between">
+
+<div>
+<h3 class="text-xl font-bold">UJIAN MPU2071</h3>
+<p id="info"></p>
+</div>
+
+<div>
+<p>Masa Tinggal</p>
+<p id="timer" class="text-xl font-bold">20:00</p>
+</div>
+
+</div>
+
+<div class="flex p-4 gap-4">
+
+<!-- NAVIGATION -->
+<div class="glass p-4 w-1/4">
+
+<h4 class="mb-2">Navigasi Soalan</h4>
+
+<div id="nav" class="grid grid-cols-5 gap-2"></div>
 
 </div>
 
 <!-- QUESTION AREA -->
-<div class="max-w-4xl mx-auto mt-6 p-4">
+<div class="glass p-6 flex-1">
 
-<div class="glass p-6 rounded-2xl shadow-xl transition-all">
+<p id="no"></p>
+<h3 id="question" class="mb-4"></h3>
 
-<div class="flex justify-between items-center mb-4">
-  <div class="text-sm text-cyan-300 font-semibold">
-    Soalan <span id="currentNo">1</span> / <span id="totalNo"></span>
-  </div>
+<div id="options"></div>
 
-  <button onclick="submitQuiz()" 
-  class="bg-emerald-500 hover:bg-emerald-600 px-5 py-2 rounded-xl text-sm font-semibold transition">
-    Hantar Jawapan
-  </button>
-</div>
-
-<hr class="opacity-20 mb-4">
-
-<div id="questionText" class="text-base md:text-lg font-medium mb-6 leading-relaxed"></div>
-
-<div id="options" class="space-y-3"></div>
-
-<div class="flex justify-between mt-8">
-<button onclick="prev()" 
-class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm transition">
-⬅ Sebelum
+<div class="mt-6 flex justify-between">
+<button onclick="prev()" class="p-2 bg-teal-700 rounded">
+Sebelum
 </button>
 
-<button onclick="next()" 
-class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-sm transition">
-Seterusnya ➡
+<button onclick="next()" class="p-2 bg-teal-700 rounded">
+Seterusnya
 </button>
 </div>
 
 </div>
 </div>
 
-<!-- NAVIGATION NUMBERS -->
-<div class="max-w-4xl mx-auto mt-4 p-4 glass rounded-2xl">
-<div id="nav" class="flex flex-wrap gap-2 justify-center"></div>
+<div class="text-center mt-4">
+<button onclick="submitQuiz()" 
+class="bg-green-600 p-3 rounded">
+HANTAR JAWAPAN
+</button>
+</div>
+
 </div>
 
 <script>
 
-let index = 0;
-let answers = {};
-let isQuizActive = false;
-let timerInterval;
+// ===== ADMIN ACCOUNT =====
+const admin = {
+kp:"admin123"
+};
 
-// ===== SOALAN =====
-const questions = [
-{q:"Kepentingan memahami konsep kokurikulum ialah:", opt:{A:"Jadual tetap",B:"Aktiviti mudah",C:"Selari perkembangan holistik murid",D:"Waktu petang sahaja"}, ans:"C"},
-{q:"Tindakan terbaik meningkatkan penyertaan badan beruniform:", opt:{A:"Aktiviti menarik membina disiplin dan kepimpinan",B:"Wajib hadir",C:"Kurangkan aktiviti",D:"Guru pilih ketua"}, ans:"A"},
-{q:"Pendekatan kolaboratif ditunjukkan melalui:", opt:{A:"Guru buat semua",B:"Murid rancang sendiri",C:"Guru dan murid rancang bersama",D:"Tugasan individu"}, ans:"C"}
+// ===== WHITELIST 15 PELAJAR =====
+const students = [
+{nama:"ABDURAHIM FAIZ BIN MAKHTARUDIN", kp:"010114-03-0523", kelas:"BNK1"},
+{nama:"AHMAD HILMI BIN KAMARULARIPIN", kp:"990918-10-5427", kelas:"BNK1"},
+{nama:"HUMAIRAH BINTI ABDUL RAHMAN", kp:"950913-14-7410", kelas:"BNK1"},
+{nama:"MOHAMAD ZULAMIDI BIN MOHAMED RASID", kp:"981016-06-5935", kelas:"BNK1"},
+{nama:"MUHAMMAD AMIRUL SYAMSURI BIN ZAHID", kp:"010915-07-0269", kelas:"BNK1"},
+{nama:"MUHAMMAD KHAIRUL AMIN BIN ALIAS", kp:"971004-38-5027", kelas:"BNK1"},
+{nama:"MUHAMMAD LUTFI AMIR BIN ABU BAKAR", kp:"990502-02-5597", kelas:"BNK1"},
+{nama:"MUHAMMAD LUTFI BIN AB.LATIF", kp:"010409-02-0015", kelas:"BNK1"},
+{nama:"MUHAMMAD NA'IM BIN AB RAZAK", kp:"941025-08-5421", kelas:"BNK1"},
+{nama:"NUR FARHANAH BINTI MOHAMAD", kp:"000207-11-0080", kelas:"BNK1"},
+{nama:"NUR FATIHAH BINTI ADAM", kp:"001226-08-0678", kelas:"BNK1"},
+{nama:"NURUL HASANAH BINTI CHE MAD SAH", kp:"000223-06-0116", kelas:"BNK1"},
+{nama:"RIZALMAN BIN ROZI", kp:"990708-03-5459", kelas:"BNK1"},
+{nama:"SHAFIKAH ZAKIAH BINTI MUHAMAD", kp:"970706-01-6176", kelas:"BNK1"},
+{nama:"SITI KHALIMAHTUS SAADIAH BINTI MOHD TAYIB", kp:"970706-38-5094", kelas:"BNK1"}
 ];
 
-document.getElementById("totalNo").innerText = questions.length;
+// ===== 30 SOALAN (RANGKA) =====
+const questions = [
+{q:"Soalan 1: .... ?", opt:{A:"",B:"",C:"",D:""}, ans:"A"},
+{q:"Soalan 2: .... ?", opt:{A:"",B:"",C:"",D:""}, ans:"B"},
+{q:"Soalan 3: .... ?", opt:{A:"",B:"",C:"",D:""}, ans:"C"},
 
-// ===== RENDER FUNCTION =====
+// ....
+// Encik boleh isi semua 30 soalan sebenar di sini
+
+];
+
+let index=0;
+let answers={};
+let time=1200;
+let isQuizActive=false;
+
+function login(){
+
+let kp=document.getElementById("kp").value;
+
+if(kp===admin.kp){
+Swal.fire("Admin Login","Mod Admin","info");
+return;
+}
+
+let s=students.find(x=>x.kp===kp);
+
+if(!s){
+Swal.fire("Akses Ditolak","Anda tidak berdaftar","error");
+return;
+}
+
+localStorage.setItem("user",JSON.stringify(s));
+
+document.getElementById("loginPage").classList.add("hidden");
+document.getElementById("quizPage").classList.remove("hidden");
+
+document.getElementById("info").innerText =
+s.nama + " | " + s.kelas;
+
+start();
+
+}
+
+function start(){
+
+enterFullscreen();
+activateKillSwitch();
+
+render();
+
+setInterval(timer,1000);
+
+isQuizActive=true;
+
+}
+
 function render(){
 
-let q = questions[index];
-document.getElementById("currentNo").innerText = index+1;
-document.getElementById("questionText").innerText = q.q;
+document.getElementById("no").innerText =
+"Soalan " + (index+1) + " / " + questions.length;
+
+document.getElementById("question").innerText =
+questions[index].q;
+
+let o=questions[index].opt;
 
 let html="";
 
-for(let k in q.opt){
+for(let k in o){
 
-let selected = answers[index]===k ? "selected" : "";
+let checked=answers[index]===k?"checked":"";
 
-html += `
-<label class="option block p-4 rounded-xl border border-white/20 bg-white/10 cursor-pointer ${selected}">
-<input type="radio" name="opt" value="${k}"
-${answers[index]===k ? "checked":""}
-onclick="selectAnswer('${k}')"
-class="mr-2">
-<span class="font-semibold mr-2">${k}.</span> ${q.opt[k]}
+html+=`
+<label class="block p-3 mb-2 bg-teal-800 rounded">
+<input type="radio" name="opt" ${checked}
+onclick="answers[${index}]='${k}'">
+${k}. ${o[k]}
 </label>`;
 }
 
-document.getElementById("options").innerHTML = html;
+document.getElementById("options").innerHTML=html;
 
 renderNav();
-updateProgress();
+
 }
 
-// ===== PILIH JAWAPAN =====
-function selectAnswer(k){
-answers[index] = k;
-render();
-}
-
-// ===== NAVIGATION =====
 function renderNav(){
 
-let nav="";
+let html="";
 
 for(let i=0;i<questions.length;i++){
 
-let active=i===index?"active":"";
-let answered=answers[i]?"answered":"";
+let cls="nav-btn";
 
-nav += `
-<button onclick="goto(${i})" 
-class="nav-number ${active} ${answered} w-8 h-8 rounded-full text-sm flex items-center justify-center transition">
+if(i===index) cls+=" active";
+if(answers[i]) cls+=" answered";
+
+html+=`
+<button class="${cls}" onclick="goto(${i})">
 ${i+1}
 </button>`;
 }
 
-document.getElementById("nav").innerHTML = nav;
+document.getElementById("nav").innerHTML=html;
+
 }
 
-function next(){ 
+function next(){
 if(index<questions.length-1){
-index++; 
+index++;
 render();
 }
 }
 
-function prev(){ 
+function prev(){
 if(index>0){
-index--; 
+index--;
 render();
 }
 }
 
-function goto(i){ 
-index=i; 
-render(); 
+function goto(i){
+index=i;
+render();
 }
 
-// ===== PROGRESS BAR =====
-function updateProgress(){
-let percent = (Object.keys(answers).length / questions.length) * 100;
-document.getElementById("progress").style.width = percent + "%";
-}
+function timer(){
 
-// ===== TIMER =====
-function startTimer(min){
-
-let time = min*60;
-
-timerInterval = setInterval(()=>{
+time--;
 
 let m=Math.floor(time/60);
 let s=time%60;
 
-document.getElementById("timer").innerText = 
+document.getElementById("timer").innerText=
 m+":"+(s<10?"0"+s:s);
 
 if(time<=0){
 forceSubmit("Masa Tamat");
 }
 
-time--;
-
-},1000);
 }
 
-// ===== ANTI CHEAT =====
-function enterFullscreen() {
-document.documentElement.requestFullscreen().catch(()=>{});
-}
-
-function activateKillSwitch() {
-
-document.addEventListener("visibilitychange", () => {
-if (document.hidden && isQuizActive) {
-isQuizActive = false;
-forceSubmit("Pelanggaran: Menukar Tab / Minimize");
-}
-});
-
-window.addEventListener("blur", () => {
-if (isQuizActive) {
-isQuizActive = false;
-forceSubmit("Pelanggaran: Fokus Hilang (Blur)");
-}
-});
-
-}
-
-// ===== FORCE SUBMIT =====
-function forceSubmit(reason){
-
-clearInterval(timerInterval);
-
-Swal.fire({
-title:"UJIAN DITAMATKAN",
-text: reason,
-icon:"error",
-confirmButtonText:"Tutup",
-background:"#0f172a",
-color:"#fff"
-}).then(()=>{
-submitQuiz();
-});
-
-}
-
-// ===== SUBMIT NORMAL =====
 function submitQuiz(){
 
-isQuizActive = false;
-clearInterval(timerInterval);
+isQuizActive=false;
 
 let score=0;
 
@@ -295,59 +300,42 @@ questions.forEach((q,i)=>{
 if(answers[i]===q.ans) score++;
 });
 
-Swal.fire({
-title:"KEPUTUSAN UJIAN",
-html: `
-<div style="font-size:20px">
-Markah Anda:<br>
-<b style="font-size:26px">${score} / ${questions.length}</b>
-</div>
-`,
-icon:"success",
-confirmButtonText:"Tutup",
-background:"#0f172a",
-color:"#fff"
-});
+Swal.fire(
+"Keputusan",
+"Markah anda: "+score+"/"+questions.length,
+"success"
+);
 
 }
 
-// ===== START =====
-function startQuiz(){
+function forceSubmit(reason){
 
-Swal.fire({
-title:"AMARAN ANTI-CHEAT",
-html:`
-<ul style="text-align:left">
-<li>Ujian akan berjalan dalam mod FULLSCREEN</li>
-<li>Dilarang MINIMIZE browser</li>
-<li>Dilarang tukar TAB</li>
-<li>Dilarang buka aplikasi lain</li>
-<li>Jika berlaku pelanggaran, ujian akan TAMAT secara automatik</li>
-</ul>
-`,
-icon:"warning",
-confirmButtonText:"Saya Faham & Setuju",
-allowOutsideClick:false,
-background:"#0f172a",
-color:"#fff"
-}).then(()=>{
+isQuizActive=false;
 
-enterFullscreen();
-startTimer(20);
-
-setTimeout(()=>{
-isQuizActive = true;
-activateKillSwitch();
-},2000);
-
-render();
-
-});
+Swal.fire("Ujian Tamat",reason,"error")
+.then(()=>submitQuiz());
 
 }
 
-startQuiz();
+function enterFullscreen(){
+document.documentElement.requestFullscreen();
+}
+
+function activateKillSwitch(){
+
+document.addEventListener("visibilitychange",()=>{
+if(document.hidden && isQuizActive)
+forceSubmit("Tukar Tab");
+});
+
+window.addEventListener("blur",()=>{
+if(isQuizActive)
+forceSubmit("Keluar Skrin");
+});
+
+}
 
 </script>
+
 </body>
 </html>
