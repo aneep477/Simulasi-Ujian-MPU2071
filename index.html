@@ -3,211 +3,285 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ujian Pengurusan Kokurikulum MPU 2071</title>
+<title>Pengurusan Kokurikulum MPU2071</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
+
+/* Animated Gradient Background */
 body {
-    user-select: none;
-    -webkit-user-select: none;
+  background: linear-gradient(-45deg, #0f172a, #1e3a8a, #064e3b, #022c22);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
 }
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* Liquid Glass Card */
+.liquid {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+}
+
+/* Hover Micro Interaction */
+.option:hover {
+  transform: scale(1.01);
+  transition: 0.2s ease;
+}
+
+/* Scroll Animation */
+.fade-in {
+  animation: fade 0.5s ease;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-number.active {
+  background: #3b82f6;
+  color: white;
+}
+
 </style>
+
 </head>
-<body class="bg-gray-100 min-h-screen">
 
-<!-- LOGIN -->
-<div id="login" class="flex items-center justify-center min-h-screen">
-<div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+<body class="min-h-screen text-white">
 
-<h2 class="text-xl font-bold text-center mb-4">PENGURUSAN KOKURIKULUM MPU 2071</h2>
-<input id="icInput" class="w-full p-3 border rounded mb-4 text-center" placeholder="Masukkan No KP">
-<button onclick="loginUser()" class="w-full bg-blue-600 text-white p-3 rounded">
-MULAKAN KUIZ
+<!-- HEADER -->
+<div class="glass sticky top-0 z-50 p-4 flex justify-between items-center">
+
+<div>
+<p class="text-sm opacity-70">Calon</p>
+<p id="nama" class="font-bold text-xl tracking-wide"></p>
+</div>
+
+<div class="text-center">
+<p class="text-sm opacity-70">Baki Masa</p>
+<p id="timer" class="text-cyan-300 font-bold text-2xl">20:00</p>
+</div>
+
+<button onclick="submitQuiz()"
+class="bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-xl shadow-lg transition">
+Hantar
 </button>
 
 </div>
+
+<!-- QUIZ CARD -->
+<div class="max-w-4xl mx-auto mt-8 p-4">
+
+<div class="liquid p-6 fade-in">
+
+<div class="mb-4 text-sm text-cyan-300 font-semibold">
+Soalan <span id="currentNo">1</span> / <span id="totalNo"></span>
 </div>
 
-<!-- QUIZ -->
-<div id="quiz" class="hidden p-4 max-w-3xl mx-auto">
-<div class="bg-white p-4 rounded mb-4 flex justify-between">
-<div>
-<p id="namaPelajar" class="font-bold"></p>
-<p id="kelasPelajar" class="text-sm text-gray-600"></p>
-</div>
-<div class="text-red-600 font-bold text-xl" id="timer">20:00</div>
+<div id="questionText" class="text-lg font-medium mb-6 leading-relaxed"></div>
+
+<div id="options" class="space-y-3"></div>
+
+<div class="flex justify-between mt-8">
+<button onclick="prev()"
+class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition">
+Sebelum
+</button>
+
+<button onclick="next()"
+class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition">
+Seterusnya
+</button>
 </div>
 
-<div id="soalanContainer"></div>
+</div>
 
-<button onclick="finishQuiz()" class="mt-6 w-full bg-green-600 text-white p-3 rounded">HANTAR</button>
+</div>
+
+<!-- NAVIGATION -->
+<div class="max-w-4xl mx-auto mt-4 p-4 glass rounded-xl">
+
+<div id="nav" class="flex flex-wrap gap-2 justify-center"></div>
+
 </div>
 
 <script>
 
-// == 1. WHITELIST PELAJAR ==
-const pelajar = [
-{nama:"ABDURAHIM FAIZ BIN MAKHTARUDIN", kp:"010114-03-0523", kelas:"BNK1"},
-{nama:"AHMAD HILMI BIN KAMARULARIPIN", kp:"990918-10-5427", kelas:"BNK1"},
-{nama:"HUMAIRAH BINTI ABDUL RAHMAN", kp:"950913-14-7410", kelas:"BNK1"},
-{nama:"MOHAMAD ZULAMIDI BIN MOHAMED RASID", kp:"981016-06-5935", kelas:"BNK1"},
-{nama:"MUHAMMAD AMIRUL SYAMSURI BIN ZAHID", kp:"010915-07-0269", kelas:"BNK1"},
-{nama:"MUHAMMAD KHAIRUL AMIN BIN ALIAS", kp:"971004-38-5027", kelas:"BNK1"},
-{nama:"MUHAMMAD LUTFI AMIR BIN ABU BAKAR", kp:"990502-02-5597", kelas:"BNK1"},
-{nama:"MUHAMMAD LUTFI BIN AB.LATIF", kp:"010409-02-0015", kelas:"BNK1"},
-{nama:"MUHAMMAD NA'IM BIN AB RAZAK", kp:"941025-08-5421", kelas:"BNK1"},
-{nama:"NUR FARHANAH BINTI MOHAMAD", kp:"000207-11-0080", kelas:"BNK1"},
-{nama:"NUR FATIHAH BINTI ADAM", kp:"001226-08-0678", kelas:"BNK1"},
-{nama:"NURUL HASANAH BINTI CHE MAD SAH", kp:"000223-06-0116", kelas:"BNK1"},
-{nama:"RIZALMAN BIN ROZI", kp:"990708-03-5459", kelas:"BNK1"},
-{nama:"SHAFIKAH ZAKIAH BINTI MUHAMAD", kp:"970706-01-6176", kelas:"BNK1"},
-{nama:"SITI KHALIMAHTUS SAADIAH BINTI MOHD TAYIB", kp:"970706-38-5094", kelas:"BNK1"}
-];
-
-// == 2. RANDOM SET PELAJAR ==
-let shuffled = pelajar.sort(() => 0.5 - Math.random());
-let setA = shuffled.slice(0,5);
-let setB = shuffled.slice(5,10);
-let setC = shuffled.slice(10,15);
-
-function getSet(kp){
-    if(setA.find(p=>p.kp===kp)) return "A";
-    if(setB.find(p=>p.kp===kp)) return "B";
-    if(setC.find(p=>p.kp===kp)) return "C";
-}
-
-// == 3. SOALAN DAN JAWAPAN BETUL ==
-
-const quizData = {
-"A":[
-{q:"Apakah pernyataan yang paling tepat menggambarkan kepentingan memahami konsep kokurikulum?", ans:"C"},
-{q:"Sekolah bercadang meningkatkan penglibatan murid dalam badan beruniform. Tindakan?", ans:"A"}
-],
-
-"B":[
-{q:"Jika objektif sebuah persatuan baharu tidak selari dengan dasar kokurikulum sekolah, tindakan?", ans:"A"},
-{q:"Sekolah ingin menubuhkan Kelab STEM. Tindakan paling mencerminkan pengurusan berkualiti?", ans:"C"}
-],
-
-"C":[
-{q:"Dalam semakan tahunan, beberapa unit tidak mengemas kini perlembagaan… langkah terbaik?", ans:"D"},
-{q:"Apakah faktor paling penting bagi memastikan carta organisasi berfungsi efektif?", ans:"C"}
-]
+// ===== DATA PELAJAR (DEMO) =====
+const student = {
+nama:"NOR AMIRA AFIZA BINTI AHMAD"
 };
 
-// == GLOBAL ==
-let currentStudent, currentSet;
-let jawapan = {};
-let markah = 0;
+document.getElementById("nama").innerText = student.nama;
 
-// == LOGIN ==
-function loginUser(){
-    let ic = document.getElementById("icInput").value.trim();
-    let student = pelajar.find(p=>p.kp===ic);
+// ===== BANK SOALAN (contoh) =====
+const questions = [
+{
+q:"Kepentingan memahami konsep kokurikulum ialah?",
+opt:{
+A:"Mudah urus jadual",
+B:"Aktiviti santai",
+C:"Selari perkembangan holistik murid",
+D:"Jimat masa"
+},
+ans:"C"
+},
+{
+q:"Tindakan paling sesuai meningkatkan penyertaan badan beruniform?",
+opt:{
+A:"Aktiviti menarik membina kepimpinan",
+B:"Wajib hadir",
+C:"Kurangkan aktiviti",
+D:"Hujung minggu sahaja"
+},
+ans:"A"
+},
+{
+q:"Pendekatan kolaboratif bermaksud?",
+opt:{
+A:"Guru rancang semua",
+B:"Murid rancang sendiri",
+C:"Guru dan murid rancang bersama",
+D:"Aktiviti individu"
+},
+ans:"C"
+}
+];
 
-    if(!student){
-        Swal.fire("Akses Ditolak","No KP tidak dibenarkan","error");
-        return;
-    }
+let index = 0;
+let answers = {};
 
-    currentStudent = student;
-    currentSet = getSet(ic);
+document.getElementById("totalNo").innerText = questions.length;
 
-    document.getElementById("namaPelajar").innerText = student.nama;
-    document.getElementById("kelasPelajar").innerText = student.kelas;
+// ===== RENDER =====
+function render(){
 
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("quiz").classList.remove("hidden");
+let q = questions[index];
 
-    renderQuiz(currentSet);
-    startTimer(20);
-    antiCheat();
+document.getElementById("currentNo").innerText = index+1;
+
+document.getElementById("questionText").innerText = q.q;
+
+let html="";
+
+for(let key in q.opt){
+
+let checked = answers[index] === key ? "checked" : "";
+
+html += `
+<label class="option block p-4 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 cursor-pointer transition">
+<input type="radio" name="opt" value="${key}" ${checked}
+onclick="answers[${index}]='${key}'">
+<span class="ml-2">${key}. ${q.opt[key]}</span>
+</label>
+`;
 }
 
-// == RENDER SOALAN ==
-function renderQuiz(set){
-    const data = quizData[set];
-    let out = "";
-    data.forEach((item,i)=>{
-        out += `
-        <div class="bg-white p-4 rounded mb-4">
-            <p class="font-bold">${i+1}. ${item.q}</p>
-            <label><input type="radio" name="q${i}" value="A"> A. A</label><br>
-            <label><input type="radio" name="q${i}" value="B"> B. B</label><br>
-            <label><input type="radio" name="q${i}" value="C"> C. C</label><br>
-            <label><input type="radio" name="q${i}" value="D"> D. D</label>
-        </div>`;
-    });
-    document.getElementById("soalanContainer").innerHTML = out;
+document.getElementById("options").innerHTML = html;
+
+renderNav();
+
 }
 
-// == TIMER ==
-let count;
-function startTimer(min){
-    let time = min*60;
-    count = setInterval(()=>{
-        let m=Math.floor(time/60), s=time%60;
-        document.getElementById("timer").innerText = m+":"+(s<10?"0"+s:s);
-        if(time<=0) processSubmit();
-        time--;
-    },1000);
+// ===== NAVIGATION NUMBER =====
+function renderNav(){
+
+let nav="";
+
+for(let i=0;i<questions.length;i++){
+
+let active = i===index ? "active" : "";
+
+let color = answers[i] ? "bg-emerald-500/70" : "bg-white/10";
+
+nav += `
+<button onclick="goto(${i})"
+class="nav-number ${active} ${color} px-3 py-1 rounded-lg hover:bg-blue-600 transition">
+${i+1}
+</button>
+`;
 }
 
-// == ANTI-CHEAT ==
-function antiCheat(){
-    document.addEventListener("visibilitychange", ()=>{ if(document.hidden) processSubmit("Pelangigaran Fokus"); });
-    window.addEventListener("blur", ()=> processSubmit("Pelangigaran Fokus"));
-    document.addEventListener("keydown", e=>{ if(e.key==="PrintScreen") processSubmit("Cubaan Screenshot"); });
-    document.documentElement.requestFullscreen().catch(()=>{});
+document.getElementById("nav").innerHTML = nav;
+
 }
 
-// == SUBMIT ==
-function finishQuiz(){
-    processSubmit();
+function next(){
+if(index < questions.length-1){
+index++;
+render();
+}
 }
 
-function processSubmit(reason="Selesai"){
-    clearInterval(count);
-
-    // kira markah
-    const data = quizData[currentSet];
-    markah = 0;
-    data.forEach((item,i)=>{
-        const ans = document.querySelector(`input[name="q${i}"]:checked`);
-        if(ans && ans.value===item.ans) markah++;
-    });
-
-    sendToSheet(markah);
+function prev(){
+if(index > 0){
+index--;
+render();
+}
 }
 
-// == HANTAR KE SHEET ==
-function sendToSheet(score){
-    const payload = {
-        nama: currentStudent.nama,
-        no_kp: currentStudent.kp,
-        set: currentSet,
-        markah: score,
-        time: document.getElementById("timer").innerText
-    };
-
-    fetch("https://script.google.com/macros/s/AKfycbwQTI3RNzDx_NpOHoU1DnXTd9NI6-TsDVfxEppafh_qfFnwBYD108KhbRsrOPek4k5r/exec", {
-        method:"POST",
-        body: JSON.stringify(payload)
-    })
-    .then(res=>res.json())
-    .then(res=>{
-        if(res.status==="success"){
-            Swal.fire("Berjaya","Markah direkodkan","success")
-            .then(()=> location.reload());
-        } else {
-            Swal.fire("Info",res.message,"info")
-            .then(()=> location.reload());
-        }
-    });
+function goto(i){
+index = i;
+render();
 }
+
+// ===== TIMER =====
+let time = 20*60;
+
+setInterval(()=>{
+
+let m = Math.floor(time/60);
+let s = time%60;
+
+document.getElementById("timer").innerText =
+m+":"+(s<10?"0"+s:s);
+
+if(time<=0){
+submitQuiz();
+}
+
+time--;
+
+},1000);
+
+// ===== SUBMIT =====
+function submitQuiz(){
+
+let score = 0;
+
+questions.forEach((q,i)=>{
+if(answers[i] === q.ans) score++;
+});
+
+Swal.fire({
+title:"Keputusan",
+text:`Markah: ${score} / ${questions.length}`,
+icon:"success",
+background:"#0f172a",
+color:"#fff"
+});
+
+}
+
+render();
 
 </script>
+
 </body>
 </html>
