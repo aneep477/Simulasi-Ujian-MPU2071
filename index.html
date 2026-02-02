@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ujian Pengurusan Kokurikulum MPU 2071</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+body {
+    user-select: none;
+    -webkit-user-select: none;
+}
+</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- LOGIN -->
+<div id="login" class="flex items-center justify-center min-h-screen">
+<div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+
+<h2 class="text-xl font-bold text-center mb-4">PENGURUSAN KOKURIKULUM MPU 2071</h2>
+<input id="icInput" class="w-full p-3 border rounded mb-4 text-center" placeholder="Masukkan No KP">
+<button onclick="loginUser()" class="w-full bg-blue-600 text-white p-3 rounded">
+MULAKAN KUIZ
+</button>
+
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="hidden p-4 max-w-3xl mx-auto">
+<div class="bg-white p-4 rounded mb-4 flex justify-between">
+<div>
+<p id="namaPelajar" class="font-bold"></p>
+<p id="kelasPelajar" class="text-sm text-gray-600"></p>
+</div>
+<div class="text-red-600 font-bold text-xl" id="timer">20:00</div>
+</div>
+
+<div id="soalanContainer"></div>
+
+<button onclick="finishQuiz()" class="mt-6 w-full bg-green-600 text-white p-3 rounded">HANTAR</button>
+</div>
+
+<script>
+
+// == 1. WHITELIST PELAJAR ==
+const pelajar = [
+{nama:"ABDURAHIM FAIZ BIN MAKHTARUDIN", kp:"010114-03-0523", kelas:"BNK1"},
+{nama:"AHMAD HILMI BIN KAMARULARIPIN", kp:"990918-10-5427", kelas:"BNK1"},
+{nama:"HUMAIRAH BINTI ABDUL RAHMAN", kp:"950913-14-7410", kelas:"BNK1"},
+{nama:"MOHAMAD ZULAMIDI BIN MOHAMED RASID", kp:"981016-06-5935", kelas:"BNK1"},
+{nama:"MUHAMMAD AMIRUL SYAMSURI BIN ZAHID", kp:"010915-07-0269", kelas:"BNK1"},
+{nama:"MUHAMMAD KHAIRUL AMIN BIN ALIAS", kp:"971004-38-5027", kelas:"BNK1"},
+{nama:"MUHAMMAD LUTFI AMIR BIN ABU BAKAR", kp:"990502-02-5597", kelas:"BNK1"},
+{nama:"MUHAMMAD LUTFI BIN AB.LATIF", kp:"010409-02-0015", kelas:"BNK1"},
+{nama:"MUHAMMAD NA'IM BIN AB RAZAK", kp:"941025-08-5421", kelas:"BNK1"},
+{nama:"NUR FARHANAH BINTI MOHAMAD", kp:"000207-11-0080", kelas:"BNK1"},
+{nama:"NUR FATIHAH BINTI ADAM", kp:"001226-08-0678", kelas:"BNK1"},
+{nama:"NURUL HASANAH BINTI CHE MAD SAH", kp:"000223-06-0116", kelas:"BNK1"},
+{nama:"RIZALMAN BIN ROZI", kp:"990708-03-5459", kelas:"BNK1"},
+{nama:"SHAFIKAH ZAKIAH BINTI MUHAMAD", kp:"970706-01-6176", kelas:"BNK1"},
+{nama:"SITI KHALIMAHTUS SAADIAH BINTI MOHD TAYIB", kp:"970706-38-5094", kelas:"BNK1"}
+];
+
+// == 2. RANDOM SET PELAJAR ==
+let shuffled = pelajar.sort(() => 0.5 - Math.random());
+let setA = shuffled.slice(0,5);
+let setB = shuffled.slice(5,10);
+let setC = shuffled.slice(10,15);
+
+function getSet(kp){
+    if(setA.find(p=>p.kp===kp)) return "A";
+    if(setB.find(p=>p.kp===kp)) return "B";
+    if(setC.find(p=>p.kp===kp)) return "C";
+}
+
+// == 3. SOALAN DAN JAWAPAN BETUL ==
+
+const quizData = {
+"A":[
+{q:"Apakah pernyataan yang paling tepat menggambarkan kepentingan memahami konsep kokurikulum?", ans:"C"},
+{q:"Sekolah bercadang meningkatkan penglibatan murid dalam badan beruniform. Tindakan?", ans:"A"}
+],
+
+"B":[
+{q:"Jika objektif sebuah persatuan baharu tidak selari dengan dasar kokurikulum sekolah, tindakan?", ans:"A"},
+{q:"Sekolah ingin menubuhkan Kelab STEM. Tindakan paling mencerminkan pengurusan berkualiti?", ans:"C"}
+],
+
+"C":[
+{q:"Dalam semakan tahunan, beberapa unit tidak mengemas kini perlembagaan… langkah terbaik?", ans:"D"},
+{q:"Apakah faktor paling penting bagi memastikan carta organisasi berfungsi efektif?", ans:"C"}
+]
+};
+
+// == GLOBAL ==
+let currentStudent, currentSet;
+let jawapan = {};
+let markah = 0;
+
+// == LOGIN ==
+function loginUser(){
+    let ic = document.getElementById("icInput").value.trim();
+    let student = pelajar.find(p=>p.kp===ic);
+
+    if(!student){
+        Swal.fire("Akses Ditolak","No KP tidak dibenarkan","error");
+        return;
+    }
+
+    currentStudent = student;
+    currentSet = getSet(ic);
+
+    document.getElementById("namaPelajar").innerText = student.nama;
+    document.getElementById("kelasPelajar").innerText = student.kelas;
+
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+
+    renderQuiz(currentSet);
+    startTimer(20);
+    antiCheat();
+}
+
+// == RENDER SOALAN ==
+function renderQuiz(set){
+    const data = quizData[set];
+    let out = "";
+    data.forEach((item,i)=>{
+        out += `
+        <div class="bg-white p-4 rounded mb-4">
+            <p class="font-bold">${i+1}. ${item.q}</p>
+            <label><input type="radio" name="q${i}" value="A"> A. A</label><br>
+            <label><input type="radio" name="q${i}" value="B"> B. B</label><br>
+            <label><input type="radio" name="q${i}" value="C"> C. C</label><br>
+            <label><input type="radio" name="q${i}" value="D"> D. D</label>
+        </div>`;
+    });
+    document.getElementById("soalanContainer").innerHTML = out;
+}
+
+// == TIMER ==
+let count;
+function startTimer(min){
+    let time = min*60;
+    count = setInterval(()=>{
+        let m=Math.floor(time/60), s=time%60;
+        document.getElementById("timer").innerText = m+":"+(s<10?"0"+s:s);
+        if(time<=0) processSubmit();
+        time--;
+    },1000);
+}
+
+// == ANTI-CHEAT ==
+function antiCheat(){
+    document.addEventListener("visibilitychange", ()=>{ if(document.hidden) processSubmit("Pelangigaran Fokus"); });
+    window.addEventListener("blur", ()=> processSubmit("Pelangigaran Fokus"));
+    document.addEventListener("keydown", e=>{ if(e.key==="PrintScreen") processSubmit("Cubaan Screenshot"); });
+    document.documentElement.requestFullscreen().catch(()=>{});
+}
+
+// == SUBMIT ==
+function finishQuiz(){
+    processSubmit();
+}
+
+function processSubmit(reason="Selesai"){
+    clearInterval(count);
+
+    // kira markah
+    const data = quizData[currentSet];
+    markah = 0;
+    data.forEach((item,i)=>{
+        const ans = document.querySelector(`input[name="q${i}"]:checked`);
+        if(ans && ans.value===item.ans) markah++;
+    });
+
+    sendToSheet(markah);
+}
+
+// == HANTAR KE SHEET ==
+function sendToSheet(score){
+    const payload = {
+        nama: currentStudent.nama,
+        no_kp: currentStudent.kp,
+        set: currentSet,
+        markah: score,
+        time: document.getElementById("timer").innerText
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycbwQTI3RNzDx_NpOHoU1DnXTd9NI6-TsDVfxEppafh_qfFnwBYD108KhbRsrOPek4k5r/exec", {
+        method:"POST",
+        body: JSON.stringify(payload)
+    })
+    .then(res=>res.json())
+    .then(res=>{
+        if(res.status==="success"){
+            Swal.fire("Berjaya","Markah direkodkan","success")
+            .then(()=> location.reload());
+        } else {
+            Swal.fire("Info",res.message,"info")
+            .then(()=> location.reload());
+        }
+    });
+}
+
+</script>
+</body>
+</html>
