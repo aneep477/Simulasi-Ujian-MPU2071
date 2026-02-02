@@ -79,7 +79,7 @@ Soalan <span id="currentNo">1</span> / <span id="totalNo"></span>
 
 <script>
 
-// ====== SETUP ASAS ======
+// ====== DATA PELAJAR ======
 document.getElementById("nama").innerText = "PESERTA UJIAN";
 
 let index = 0;
@@ -87,7 +87,7 @@ let answers = {};
 let isQuizActive = false;
 let timerInterval;
 
-// ===== 30 SOALAN (dipendekkan untuk contoh – guna set penuh sebenar) =====
+// ===== CONTOH SOALAN =====
 const questions = [
 {q:"Kepentingan memahami konsep kokurikulum ialah:", opt:{A:"Jadual tetap",B:"Aktiviti mudah",C:"Selari perkembangan holistik murid",D:"Waktu petang sahaja"}, ans:"C"},
 {q:"Tindakan terbaik meningkatkan penyertaan badan beruniform:", opt:{A:"Aktiviti menarik membina disiplin dan kepimpinan",B:"Wajib hadir",C:"Kurangkan aktiviti",D:"Guru pilih ketua"}, ans:"A"},
@@ -145,10 +145,7 @@ time--;
 },1000);
 }
 
-// =====================================================
-// --------- 5. ANTI-CHEAT (KILL SWITCH) --------------
-// =====================================================
-
+// ===== ANTI CHEAT =====
 function enterFullscreen() {
     const elem = document.documentElement;
     if (elem.requestFullscreen) {
@@ -188,14 +185,7 @@ background:"#0f172a",
 color:"#fff"
 }).then(()=>{
 
-let score=0;
-questions.forEach((q,i)=>{
-if(answers[i]===q.ans) score++;
-});
-
-console.log("Markah disimpan:", score);
-
-location.reload();
+submitQuiz();
 
 });
 }
@@ -211,18 +201,43 @@ questions.forEach((q,i)=>{
 if(answers[i]===q.ans) score++;
 });
 
+// === PAPAR MARKAH KEPADA PELAJAR ===
 Swal.fire({
-title:"Keputusan",
-text:`Markah: ${score} / ${questions.length}`,
+title:"KEPUTUSAN UJIAN",
+html: `
+<div style="font-size:20px">
+Markah Anda:<br>
+<b style="font-size:26px">${score} / ${questions.length}</b>
+</div>
+`,
 icon:"success",
+confirmButtonText:"Tutup",
 background:"#0f172a",
 color:"#fff"
 });
 
 }
 
-// ===== START QUIZ =====
+// ===== MULA KUIZ DENGAN AMARAN ANTI CHEAT =====
 function startQuiz(){
+
+Swal.fire({
+title:"AMARAN ANTI-CHEAT",
+html:`
+<ul style="text-align:left">
+<li>Ujian akan berjalan dalam mod FULLSCREEN</li>
+<li>Dilarang MINIMIZE browser</li>
+<li>Dilarang tukar TAB</li>
+<li>Dilarang buka aplikasi lain</li>
+<li>Jika berlaku pelanggaran, ujian akan TAMAT secara automatik</li>
+</ul>
+`,
+icon:"warning",
+confirmButtonText:"Saya Faham & Setuju",
+allowOutsideClick:false,
+background:"#0f172a",
+color:"#fff"
+}).then(()=>{
 
 enterFullscreen();
 startTimer(20);
@@ -233,6 +248,9 @@ activateKillSwitch();
 },2000);
 
 render();
+
+});
+
 }
 
 // AUTO START
