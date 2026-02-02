@@ -1,3 +1,126 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ujian MPU2071</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+body {
+  background: linear-gradient(135deg, #004d40, #002b2b);
+  min-height: 100vh;
+  color:white;
+}
+
+.glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+}
+
+.nav-btn {
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  background:#0d5c5c;
+}
+
+.answered {
+  background:#00bfa5 !important;
+}
+
+.active {
+  border:2px solid white;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="flex items-center justify-center min-h-screen">
+
+<div class="glass p-8 w-full max-w-md">
+
+<h2 class="text-2xl font-bold mb-4">LOGIN UJIAN MPU2071</h2>
+
+<input id="kp" placeholder="No Kad Pengenalan"
+class="w-full p-3 mb-4 text-black rounded">
+
+<button onclick="login()" 
+class="w-full bg-teal-600 p-3 rounded">
+Masuk
+</button>
+
+<p class="mt-4 text-sm">
+Hanya 15 pelajar berdaftar dibenarkan akses
+</p>
+
+</div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div id="quizPage" class="hidden">
+
+<div class="p-4 bg-teal-900 flex justify-between">
+
+<div>
+<h3 class="text-xl font-bold">UJIAN MPU2071</h3>
+<p id="info"></p>
+</div>
+
+<div>
+<p>Masa Tinggal</p>
+<p id="timer" class="text-xl font-bold">20:00</p>
+</div>
+
+</div>
+
+<div class="flex p-4 gap-4">
+
+<!-- NAVIGATION -->
+<div class="glass p-4 w-1/4">
+
+<h4 class="mb-2">Navigasi Soalan</h4>
+
+<div id="nav" class="grid grid-cols-5 gap-2"></div>
+
+</div>
+
+<!-- QUESTION AREA -->
+<div class="glass p-6 flex-1">
+
+<p id="no"></p>
+<h3 id="question" class="mb-4"></h3>
+
+<div id="options"></div>
+
+<div class="mt-6 flex justify-between">
+<button onclick="prev()" class="p-2 bg-teal-700 rounded">
+Sebelum
+</button>
+
+<button onclick="next()" class="p-2 bg-teal-700 rounded">
+Seterusnya
+</button>
+</div>
+
+</div>
+</div>
+
+<div class="text-center mt-4">
+<button onclick="submitQuiz()" 
+class="bg-green-600 p-3 rounded">
+HANTAR JAWAPAN
+</button>
+</div>
+
+</div>
+
 <script>
 
 // ===== WHITELIST 15 PELAJAR =====
@@ -19,8 +142,9 @@ const students = [
 "970706-38-5094"
 ];
 
-// ===== SEMUA 30 SOALAN =====
+// ===== 30 SOALAN =====
 const allQuestions = [
+
 {q:"Kepentingan memahami konsep kokurikulum ialah:", opt:{A:"Jadual tetap",B:"Aktiviti mudah",C:"Selari perkembangan holistik murid",D:"Waktu petang sahaja"}, ans:"C"},
 
 {q:"Tindakan terbaik meningkatkan penyertaan badan beruniform:", opt:{A:"Aktiviti menarik membina disiplin",B:"Wajib hadir",C:"Kurangkan aktiviti",D:"Guru pilih ketua"}, ans:"A"},
@@ -80,6 +204,7 @@ const allQuestions = [
 {q:"Objektif kokurikulum:", opt:{A:"Disiplin",B:"Akademik sahaja",C:"Bakat sahaja",D:"Rekod"}, ans:"A"},
 
 {q:"Prinsip pengurusan:", opt:{A:"Perancangan",B:"Populariti",C:"Kos rendah",D:"Jumlah aktiviti"}, ans:"A"}
+
 ];
 
 // ===== FUNGSI SHUFFLE =====
@@ -123,7 +248,7 @@ let temp = [...allQuestions];
 
 if(set==="A") questions = shuffle(temp);
 if(set==="B") questions = shuffle(temp).reverse();
-if(set==="C") questions = shuffle(temp).slice(0,30);
+if(set==="C") questions = shuffle(temp);
 
 document.getElementById("loginPage").classList.add("hidden");
 document.getElementById("quizPage").classList.remove("hidden");
@@ -253,3 +378,6 @@ forceSubmit("Keluar Skrin");
 }
 
 </script>
+
+</body>
+</html>
